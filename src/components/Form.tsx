@@ -1,59 +1,55 @@
-import { useState, ChangeEvent, FormEvent, Dispatch, useEffect } from "react";
-import { v4 as uuuiv4 } from "uuid";
-import { categories } from "../data/categories";
-import type { Activity } from "../types";
-import { ActivityState } from "../reducers/activity-reducer";
-import { ActivityActions } from "../reducers/activity-reducer";
-type FormProps = {
-  dispatch: Dispatch<ActivityActions>;
-  state: ActivityState;
-};
+import { useState, ChangeEvent, FormEvent, useEffect } from "react"
+import { v4 as uuuiv4 } from "uuid"
+import { categories } from "../data/categories"
+import type { Activity } from "../types"
+import { useActivity } from "../hooks/useActivity"
 
 const initialState: Activity = {
   id: uuuiv4(),
   category: 1,
   name: "",
   calories: 0,
-};
+}
 
-export default function Form({ dispatch, state }: FormProps) {
-  const [activity, setActivity] = useState<Activity>(initialState);
+export default function Form() {
+  const { state, dispatch } = useActivity()
+
+  const [activity, setActivity] = useState<Activity>(initialState)
 
   useEffect(() => {
     if (state.activeId) {
       const selectedActivity = state.activities.filter(
         (stateActivity) => stateActivity.id === state.activeId
-      )[0];
-      setActivity(selectedActivity);
+      )[0]
+      setActivity(selectedActivity)
     }
-  }, [state.activeId]);
+  }, [state.activeId])
 
   const handleChange = (
     e: ChangeEvent<HTMLSelectElement> | ChangeEvent<HTMLInputElement>
   ) => {
-    const isNumberField = ["category", "calories"].includes(e.target.id);
+    const isNumberField = ["category", "calories"].includes(e.target.id)
     setActivity({
       ...activity,
       [e.target.id]: isNumberField ? +e.target.value : e.target.value,
-    });
-  };
+    })
+  }
 
   const isValidActivity = () => {
-    const { name, calories } = activity;
-    return name.trim() !== "" && calories > 0;
-  };
+    const { name, calories } = activity
+    return name.trim() !== "" && calories > 0
+  }
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    dispatch({ type: "save-activity", payload: { newActivity: activity } });
-    setActivity({ ...initialState, id: uuuiv4() });
-  };
+    e.preventDefault()
+    dispatch({ type: "save-activity", payload: { newActivity: activity } })
+    setActivity({ ...initialState, id: uuuiv4() })
+  }
 
   return (
     <form
       className="space-y-5 bg-white shadow p-10 rounded-lg"
-      onSubmit={handleSubmit}
-    >
+      onSubmit={handleSubmit}>
       <div className="grid grid-cols-1 gap-3">
         <label htmlFor="category" className="font-bold">
           Categoria:
@@ -62,8 +58,7 @@ export default function Form({ dispatch, state }: FormProps) {
           id="category"
           className="border border-slate-300 p2 rounded-lg w-full bg-white"
           value={activity.category}
-          onChange={handleChange}
-        >
+          onChange={handleChange}>
           {categories.map((category) => (
             <option key={category.id} value={category.id}>
               {category.name}
@@ -104,5 +99,5 @@ export default function Form({ dispatch, state }: FormProps) {
         disabled={!isValidActivity()}
       />
     </form>
-  );
+  )
 }
