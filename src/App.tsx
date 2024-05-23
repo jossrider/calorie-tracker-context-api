@@ -1,18 +1,19 @@
-import { useEffect, useMemo, useReducer } from "react";
-import Form from "./components/Form";
-import ActivityList from "./components/ActivityList";
-import { activityReducer, initialState } from "./reducers/activity-reducer";
-import CalorieTracker from "./components/CalorieTracker";
+import { useEffect, useMemo } from "react"
+import Form from "./components/Form"
+import ActivityList from "./components/ActivityList"
+import CalorieTracker from "./components/CalorieTracker"
+import { useActivity } from "./hooks/useActivity"
 
 function App() {
-  const [state, dispatch] = useReducer(activityReducer, initialState);
-
+  const { state, dispatch } = useActivity()
+  // const [state, dispatch] = useReducer(activityReducer, initialState)
+  useActivity
   useEffect(() => {
-    localStorage.setItem("activities", JSON.stringify(state.activities));
-  }, [state.activities]);
+    localStorage.setItem("activities", JSON.stringify(state.activities))
+  }, [state.activities])
 
   const canResetApp = () =>
-    useMemo(() => state.activities.length, [state.activities]);
+    useMemo(() => state.activities.length, [state.activities])
 
   return (
     <>
@@ -24,8 +25,7 @@ function App() {
           <button
             className="bg-gray-800 hover:bg-gray-900 p-2 font-bold uppercase text-white cursor-pointer rounded-lg text-sm disabled:opacity-10"
             disabled={!canResetApp()}
-            onClick={() => dispatch({ type: "restart-app" })}
-          >
+            onClick={() => dispatch({ type: "restart-app" })}>
             Reiniciar App
           </button>
         </div>
@@ -37,14 +37,14 @@ function App() {
       </section>
       <section className="bg-gray-800 p-10">
         <div className="max-w-4xl mx-auto">
-          <CalorieTracker activities={state.activities} />
+          <CalorieTracker />
         </div>
       </section>
       <section className="p-10 mx-auto max-w-4l">
-        <ActivityList activities={state.activities} dispatch={dispatch} />
+        <ActivityList  />
       </section>
     </>
-  );
+  )
 }
 
-export default App;
+export default App
